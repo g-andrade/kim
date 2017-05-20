@@ -1,0 +1,48 @@
+body {
+    position:absolute;
+    margin: 0;
+    padding: 0;
+    height:100%;
+    width:100%;
+    /* overflow: hidden; */
+    background-color: black;
+}
+
+#video {
+    position: absolute; 
+    /*right: 0; 
+    bottom: 0;
+    min-width: 100%; 
+    min-height: 100%;
+    width: 100%; 
+    height: 100%;*/
+    width: auto;
+    height: auto;
+    background-size: cover;
+    overflow: hidden;
+    visibility: hidden;
+    z-index: -30;
+}
+
+#video-canvas {
+    position: absolute; 
+    background-size: cover;
+    overflow: hidden;
+    visibility: hidden;
+    z-index: -20;
+}
+
+#kim-img {
+    position: absolute;
+    width: auto; /*or your image's width*/
+    height: auto; /*or your image's height*/
+    overflow: hidden;
+    visibility: hidden;
+    z-index: -10;
+}
+
+#kim-canvas {
+    overflow: hidden;
+    border: 1px white dotted;
+    z-index: -20;
+}
