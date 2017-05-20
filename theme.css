@@ -43,6 +43,5 @@ body {
 
 #kim-canvas {
     overflow: hidden;
-    border: 1px white dotted;
     z-index: -20;
 }

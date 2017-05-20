@@ -9,16 +9,55 @@ function onLoad() {
     var video = $('#video')[0];
     var videoCanvas= $('#video-canvas')[0];
     var videoContext = videoCanvas.getContext('2d');
-    
+    var kimImg = $('#kim-img')[0];
+    var kimCanvas = $('#kim-canvas')[0];
+    var kimContext = kimCanvas.getContext('2d');
+   
+    kimContext.font = '40px serif';
+    kimContext.fillStyle = '#ffffff';
+    kimContext.fillText('Matching face...', 10, 50);
+
+    video.addEventListener(
+            'play', 
+            () => {
+                //$(window).resize(onResize);
+                onResize();
+                //setInterval(onResize, 1000);
+                setInterval(trackFaces, 1000);
+                setInterval(renderKim, 1000);
+
+                var hasExecutedFirstContentResize = false;
+
+                var draw = function(video, dt) {
+                    if (!hasExecutedFirstContentResize) {
+                        hasExecutedFirstContentResize = true;
+                        onResize();
+                        trackFaces();
+                    }
+                    if (video.videoWidth > 0 && video.videoHeight > 0) {
+                        videoContext.drawImage(video, 0, 0); //, context.canvas.width, context.canvas.height);
+                        //track();
+                    }
+                };
+                var myCamvas = new camvas(videoContext, draw);
+            },
+            false);
+
     // Get access to the camera!
     if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         // Not adding `{ audio: true }` since we only want video now
         navigator.mediaDevices.getUserMedia({ video: true }).then(function(stream) {
             video.src = window.URL.createObjectURL(stream);
-            video.play();
+            //video.play();
         });
     }
     
+    //$('body').click(() => video.play());
+    video.click(() => video.play());
+    videoCanvas.click(() => video.play());
+    kimImg.click(() => video.play());
+    kimCanvas.click(() => video.play());
+
     /* Legacy code below: getUserMedia 
     else if(navigator.getUserMedia) { // Standard
         navigator.getUserMedia({ video: true }, function(stream) {
@@ -38,32 +77,6 @@ function onLoad() {
     }
     */
 
-    //$(window).resize(onResize);
-    onResize();
-    //setInterval(onResize, 1000);
-    setInterval(trackFaces, 1000);
-    setInterval(renderKim, 1000);
-
-    var hasExecutedFirstContentResize = false;
-
-    var draw = function(video, dt) {
-        if (!hasExecutedFirstContentResize) {
-            hasExecutedFirstContentResize = true;
-            onResize();
-            trackFaces();
-        }
-        if (video.videoWidth > 0 && video.videoHeight > 0) {
-            videoContext.drawImage(video, 0, 0); //, context.canvas.width, context.canvas.height);
-            //track();
-        }
-    };
-    var myCamvas = new camvas(videoContext, draw);
-    //video.addEventListener(
-    //        'play', 
-    //        () => {
-    //            draw(this, videoContext);
-    //        },
-    //        false);
 }
 
 function onResize() {
@@ -115,7 +128,7 @@ function trackFaces() {
     var videoContext = videoCanvas.getContext('2d');
 
     //maskContext.strokeStyle = 'red';
-    $('#video-canvas').faceDetection({
+    $('#video').faceDetection({
         complete: function (faces) {
             if (! Array.isArray(faces)) {
                 return;
@@ -143,7 +156,8 @@ function trackFaces() {
                     console.error(err);
                 }
             }
-        }
+        },
+        error: ((code, message) => console.log('error! ' + code + ' / ' + message))
     });
 }
 
@@ -161,10 +175,16 @@ function renderKim() {
     var kimContext = kimCanvas.getContext('2d');
 
     kimCanvas.style.position = "absolute";
-    kimCanvas.style.left = pixels((window.innerWidth / 2) - (kimImg.width / 2));
-    kimCanvas.style.top = pixels((window.innerHeight / 2) - (kimImg.height / 2));
-    kimCanvas.style.width = pixels(kimImg.width);
-    kimCanvas.style.height = pixels(kimImg.height);
+    if (window.innerWidth > window.innerHeight) {
+        kimCanvas.style.width = "100%";
+        kimCanvas.style.maxHeight = pixels(window.innerHeight);
+        kimCanvas.style.height = "auto";
+    }
+    else {
+        kimCanvas.style.height = "100%";
+        kimCanvas.style.maxWidth = pixels(window.innerHeight);
+        kimCanvas.style.width = "auto";
+    }
     kimCanvas.width = kimImg.width;
     kimCanvas.height = kimImg.height;
 
